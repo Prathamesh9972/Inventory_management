@@ -1,0 +1,102 @@
+/* ChemicalsManagement.css */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css");
+
+.chemicals-management {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page-title {
+  color: #344767;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.table thead th {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 6px 10px;
+}
+
+.badge.bg-success {
+  background-color: #d1e7dd !important;
+  color: #0f5132;
+}
+
+.badge.bg-danger {
+  background-color: #f8d7da !important;
+  color: #842029;
+}
+
+.badge.bg-warning {
+  background-color: #fff3cd !important;
+  color: #664d03;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Form styling */
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Modal styling */
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 15px 20px;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 15px 20px;
+}
+
+/* Loading spinner */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
