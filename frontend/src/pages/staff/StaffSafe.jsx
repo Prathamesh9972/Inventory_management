@@ -180,7 +180,7 @@ const StaffSafety = () => {
       <StaffHeader />
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="display-5">Chemical Safety Information</h1>
+          <h1 className=" font-bold">Chemical Safety Information</h1>
           
         </div>
 
@@ -275,7 +275,7 @@ const StaffSafety = () => {
         </div>
 
         {/* Safety Information List */}
-        <div className="card shadow">
+        <div className="p-4 card shadow">
           <div className="card-header bg-light">
             <h2 className="h5 mb-0">Safety Information List</h2>
           </div>

@@ -15,6 +15,7 @@ const Reports = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [showFilters, setShowFilters] = useState(false);
+    const [sales, setSales] = useState([]);
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -87,45 +88,71 @@ const Reports = () => {
     window.print();
   };
 
-  // Chart data preparation functions
   const prepareSalesVsPurchasesData = () => {
-    if (!report) return [];
-    
-    const salesByMonth = {};
-    const purchasesByMonth = {};
-    
-    report.salesDetails.forEach(sale => {
-      const date = new Date(sale.saleDate);
-      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      if (!salesByMonth[monthKey]) {
-        salesByMonth[monthKey] = 0;
+    const dateMap = new Map();
+  
+    // Aggregate sales
+    report.salesDetails.forEach((sale) => {
+      const date = new Date(sale.saleDate).toLocaleDateString();
+      const salesQty = sale.quantity;
+  
+      if (!dateMap.has(date)) {
+        dateMap.set(date, { name: date, sales: 0, purchases: 0 });
       }
-      salesByMonth[monthKey] += (sale.payment?.amountPaid || 0);
+  
+      const entry = dateMap.get(date);
+      entry.sales += salesQty * 5000; // Approx sale price per unit (custom logic here)
     });
-    
-    report.purchaseDetails.forEach(purchase => {
-      const date = new Date(purchase.purchaseDate);
-      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      if (!purchasesByMonth[monthKey]) {
-        purchasesByMonth[monthKey] = 0;
+  
+    // Aggregate purchases
+    report.purchaseDetails.forEach((purchase) => {
+      const date = new Date(purchase.purchaseDate).toLocaleDateString();
+      const totalCost = purchase.price;
+  
+      if (!dateMap.has(date)) {
+        dateMap.set(date, { name: date, sales: 0, purchases: 0 });
       }
-      purchasesByMonth[monthKey] += (purchase.payment?.amountPaid || 0);
+  
+      const entry = dateMap.get(date);
+      entry.purchases += totalCost;
     });
-    
-    const allMonths = [...new Set([...Object.keys(salesByMonth), ...Object.keys(purchasesByMonth)])].sort();
-    
-    return allMonths.map(month => {
-      const [year, monthNum] = month.split('-');
-      const monthName = new Date(parseInt(year), parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'short' });
-      
-      return {
-        name: `${monthName} ${year}`,
-        sales: salesByMonth[month] || 0,
-        purchases: purchasesByMonth[month] || 0,
-        profit: (salesByMonth[month] || 0) - (purchasesByMonth[month] || 0)
-      };
-    });
+  
+    // Calculate profit
+    const finalData = Array.from(dateMap.values()).map(item => ({
+      ...item,
+      profit: item.sales - item.purchases
+    }));
+  
+    return finalData.sort((a, b) => new Date(a.name) - new Date(b.name));
   };
+  useEffect(()=>{
+    console.log("sales data: ",sales);
+  })
+
+  // Fetch all sales
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/sales');
+        setSales(response.data);
+      } catch (error) {
+        console.error('Error fetching sales:', error);
+      }
+    };
+
+    // Fetch chemicals for the dropdown
+    const fetchChemicals = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/chemicals');
+        setChemicalOptions(response.data);
+      } catch (error) {
+        console.error('Error fetching chemicals:', error);
+      }
+    };
+
+    fetchSales();
+    fetchChemicals();
+  }, []);
 
   const getTopSellingChemicals = () => {
     if (!report || !report.salesDetails) return [];
@@ -188,17 +215,18 @@ const Reports = () => {
   return (
     <div className="reports-page bg-light min-vh-100">
       <Header />
-      <div className="bg-white shadow-sm border-bottom">
+      <hr/>
+      <div className="z-4 bg-white shadow-sm border-bottom">
         <Container fluid className="py-4">
           <Row className="align-items-center">
           <Col md={7}>
-  <h1 className="mb-1 fw-bold text-primary display-5">
-    Inventory Management Reports
-  </h1>
-  <p className="text-muted fs-5">
-    📊 Comprehensive analysis of sales, purchases, and inventory data.
-  </p>
-</Col>
+            <h1 className="mb-1 fw-bold text-primary  font-bold">
+              Inventory Management Reports
+            </h1>
+            <p className=" fs-5">
+               Comprehensive analysis of sales, purchases, and inventory data.
+            </p>
+          </Col>
 
             <Col md={5} className="text-md-end mt-3 mt-md-0">
               <Button 
@@ -303,14 +331,7 @@ const Reports = () => {
               Inventory
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item>
-            <Nav.Link 
-              active={activeTab === 'analytics'}
-              onClick={() => setActiveTab('analytics')}
-            >
-              Analytics
-            </Nav.Link>
-          </Nav.Item>
+          
         </Nav>
 
         {/* Overview Tab */}
@@ -320,8 +341,8 @@ const Reports = () => {
               <Col md={3} sm={6}>
                 <Card className="h-100">
                   <Card.Body>
-                    <h6 className="text-muted mb-2">Total Sales Value</h6>
-                    <h3 className="mb-0">₹{report.totalSalesValue.toLocaleString('en-IN', {maximumFractionDigits: 2})}</h3>
+                    <h6 className="text-muted mb-2 text-center">Total Sales Cnt</h6>
+                    <h3 className="mb-0 text-center">{report.salesCount}</h3>
                   </Card.Body>
                 </Card>
               </Col>
@@ -337,7 +358,7 @@ const Reports = () => {
                 <Card className="h-100">
                   <Card.Body>
                     <h6 className="text-muted mb-2">Profit Margin</h6>
-                    <h3 className="mb-0">{((report.totalSalesValue - report.totalPurchaseCost) / report.totalSalesValue * 100).toFixed(2)}%</h3>
+                    <h3 className="mb-0">{((report.totalSalesValue - report.totalPurchaseCost) / 440000 * 100).toFixed(1)}%</h3>
                   </Card.Body>
                 </Card>
               </Col>
@@ -447,85 +468,86 @@ const Reports = () => {
         {/* Sales Tab */}
         {activeTab === 'sales' && (
           <Card>
-            <Card.Header className="bg-white d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Sales Details ({report.salesCount})</h5>
-              <Button 
-                variant="outline-primary" 
-                size="sm"
-                onClick={() => downloadCSV(report.salesDetails, 'sales-details')}
-              >
-                <Download size={16} className="me-2" />
-                Export CSV
-              </Button>
-            </Card.Header>
-            <Card.Body>
-              <Row className="g-4 mb-4">
-                <Col md={4}>
-                  <div className="border-end">
-                    <h6 className="text-muted mb-1">Total Sales Value</h6>
-                    <p className="h4 mb-0">₹{report.totalSalesValue.toLocaleString('en-IN', {maximumFractionDigits: 2})}</p>
-                  </div>
-                </Col>
-                <Col md={4}>
-                  <div className="border-end">
-                    <h6 className="text-muted mb-1">Payment Received</h6>
-                    <p className="h4 mb-0">₹{report.totalPaymentReceived.toLocaleString('en-IN', {maximumFractionDigits: 2})}</p>
-                  </div>
-                </Col>
-                <Col md={4}>
-                  <div>
-                    <h6 className="text-muted mb-1">Outstanding Amount</h6>
-                    <p className="h4 mb-0">₹{(report.totalSalesValue - report.totalPaymentReceived).toLocaleString('en-IN', {maximumFractionDigits: 2})}</p>
-                  </div>
-                </Col>
-              </Row>
-
-              <div className="table-responsive">
-                <Table hover className="align-middle">
-                  <thead className="bg-light">
-                    <tr>
-                      <th>Chemical</th>
-                      <th>Batch</th>
-                      <th>Quantity</th>
-                      <th>Customer</th>
-                      <th>Sold By</th>
-                      <th>Sale Date</th>
-                      <th>Sale Value</th>
-                      <th>Amount Paid</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {report.salesDetails.map((sale) => {
-                      const saleValue = sale.quantity * (sale.price || 0);
-                      const paymentStatus = sale.payment?.amountPaid >= saleValue ? 'Paid' : 
-                                          sale.payment?.amountPaid > 0 ? 'Partial' : 'Unpaid';
-                      
-                      let statusVariant = 'success';
-                      if (paymentStatus === 'Partial') statusVariant = 'warning';
-                      if (paymentStatus === 'Unpaid') statusVariant = 'danger';
-                      
-                      return (
-                        <tr key={sale._id}>
-                          <td>{sale.chemical?.name || 'N/A'}</td>
-                          <td>{sale.chemical?.batchNumber || 'N/A'}</td>
-                          <td>{sale.quantity}</td>
-                          <td>{sale.customerName}</td>
-                          <td>{sale.soldBy}</td>
-                          <td>{new Date(sale.saleDate).toLocaleDateString()}</td>
-                          <td>₹{saleValue.toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
-                          <td>₹{(sale.payment?.amountPaid || 0).toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
-                          <td>
-                            <Badge bg={statusVariant}>{paymentStatus}</Badge>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </div>
-            </Card.Body>
-          </Card>
+          <Card.Header className="bg-white d-flex justify-content-between align-items-center">
+            <h5 className="mb-0">Sales Details</h5>
+            <Button variant="outline-primary" size="sm" onClick={() => downloadCSV(report.salesDetails, 'sales-details')}>
+              <Download size={16} className="me-2" />
+              Export CSV
+            </Button>
+          </Card.Header>
+          <Card.Body>
+            <Row className="g-4 mb-4">
+              <Col md={3}>
+                <div className="border-end text-center">
+                  <h6 className="text-muted mb-1">Total Sales Count</h6>
+                  <p className="h4 mb-0">{report.salesCount}</p>
+                </div>
+              </Col>
+              <Col md={3}>
+                <div className="border-end text-center">
+                  <h6 className="text-muted mb-1">Total Sales Value</h6>
+                  <p className="h4 mb-0">₹{report.totalSalesValue.toLocaleString('en-IN')}</p>
+                </div>
+              </Col>
+              <Col md={3}>
+                <div className="border-end text-center">
+                  <h6 className="text-muted mb-1">Payment Received</h6>
+                  <p className="h4 mb-0">₹{report.totalPaymentReceived.toLocaleString('en-IN')}</p>
+                </div>
+              </Col>
+              <Col md={3}>
+                <div className="text-center">
+                  <h6 className="text-muted mb-1">Outstanding Amount</h6>
+                  <p className="h4 mb-0">
+                    ₹{(report.totalSalesValue - report.totalPaymentReceived).toLocaleString('en-IN')}
+                  </p>
+                </div>
+              </Col>
+            </Row>
+    
+            <div className="table-responsive">
+              <Table hover className="align-middle">
+                <thead className="bg-light">
+                  <tr>
+                    <th>Chemical</th>
+                    <th>Batch</th>
+                    <th>Quantity</th>
+                    <th>Customer</th>
+                    <th>Sold By</th>
+                    <th>Sale Date</th>
+                    <th>Sale Value</th>
+                    <th>Amount Paid</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sales.map((sale) => {
+                    const saleValue = sale.paymentAmount || 0;
+                    const paymentStatus = sale.paymentAmount > 0 ? 'Paid' : 'Unpaid';
+                    let statusVariant = 'success';
+                    if (paymentStatus === 'Unpaid') statusVariant = 'danger';
+    
+                    return (
+                      <tr key={sale._id}>
+                        <td>{sale.chemical?.name || 'N/A'}</td>
+                        <td>{sale.chemical?.batchNumber || 'N/A'}</td>
+                        <td>{sale.quantity}</td>
+                        <td>{sale.customerName}</td>
+                        <td>{sale.soldBy || 'N/A'}</td>
+                        <td>{new Date(sale.saleDate).toLocaleDateString()}</td>
+                        <td>₹{sale.paymentAmount}</td>
+                        <td>₹{(sale.paymentAmount || 0)}</td>
+                        <td>
+                          <Badge bg={statusVariant}>{sale.paymentStatus}</Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            </div>
+          </Card.Body>
+        </Card>
         )}
 
         {/* Purchases Tab */}
@@ -714,148 +736,7 @@ const Reports = () => {
           </Card>
         )}
 
-        {/* Analytics Tab */}
-        {activeTab === 'analytics' && (
-          <>
-            <Row className="g-4 mb-4">
-              <Col lg={6}>
-                <Card>
-                  <Card.Header className="bg-white">
-                    <h5 className="mb-0">Revenue Analysis</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <div style={{ height: 300 }}>
-                      <ResponsiveContainer>
-                        <LineChart data={prepareSalesVsPurchasesData()}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Line type="monotone" dataKey="sales" stroke="#0088FE" name="Revenue" />
-                          <Line type="monotone" dataKey="profit" stroke="#00C49F" name="Profit" />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col lg={6}>
-                <Card>
-                  <Card.Header className="bg-white">
-                    <h5 className="mb-0">Sales by Employee</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <div style={{ height: 300 }}>
-                      <ResponsiveContainer>
-                        <PieChart>
-                          <Pie
-                            data={
-                              report.salesDetails.reduce((acc, sale) => {
-                                const employee = sale.soldBy;
-                                const existingEmployee = acc.find(item => item.name === employee);
-                                
-                                if (existingEmployee) {
-                                  existingEmployee.value += (sale.payment?.amountPaid || 0);
-                                } else {
-                                  acc.push({
-                                    name: employee,
-                                    value: (sale.payment?.amountPaid || 0)
-                                  });
-                                }
-                                
-                                return acc;
-                              }, [])
-                            }
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {report.salesDetails.reduce((acc, sale) => {
-                              const employee = sale.soldBy;
-                              if (!acc.find(item => item.name === employee)) {
-                                acc.push({ name: employee });
-                              }
-                              return acc;
-                            }, []).map((_, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => [`₹${value.toLocaleString('en-IN', {maximumFractionDigits: 2})}`, 'Sales Value']} />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-
-            <Row className="g-4">
-              <Col md={6}>
-                <Card>
-                  <Card.Header className="bg-white">
-                    <h5 className="mb-0">Financial Metrics</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <span>Revenue Growth Rate</span>
-                      <span className="h5 mb-0">{report.salesDetails.length > 0 ? '25.4%' : '0%'}</span>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <span>Profit Margin</span>
-                      <span className="h5 mb-0">
-                        {((report.totalSalesValue - report.totalPurchaseCost) / report.totalSalesValue * 100).toFixed(2)}%
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span>Return on Investment</span>
-                      <span className="h5 mb-0">
-                        {((report.totalSalesValue - report.totalPurchaseCost) / report.totalPurchaseCost * 100).toFixed(2)}%
-                      </span>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={6}>
-                <Card>
-                  <Card.Header className="bg-white">
-                    <h5 className="mb-0">Operational Metrics</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <span>Avg. Order Value</span>
-                      <span className="h5 mb-0">
-                        ₹{report.salesDetails.length > 0 ? 
-                          (report.totalSalesValue / report.salesDetails.length).toLocaleString('en-IN', {maximumFractionDigits: 2}) : 
-                          '0'}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <span>Inventory Value</span>
-                      <span className="h5 mb-0">
-                        ₹{report.chemicalDetails.reduce((total, chem) => {
-                          const purchases = report.purchaseDetails.filter(p => p.chemical?.name === chem.name);
-                          const avgPrice = purchases.length > 0 ? 
-                            purchases.reduce((sum, p) => sum + p.price, 0) / purchases.length : 0;
-                          return total + (chem.quantity * avgPrice);
-                        }, 0).toLocaleString('en-IN', {maximumFractionDigits: 2})}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span>Out of Stock Items</span>
-                      <span className="h5 mb-0">{report.chemicalDetails.filter(chem => chem.quantity === 0).length}</span>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-          </>
-        )}
+       
       </Container>
     </div>
   );

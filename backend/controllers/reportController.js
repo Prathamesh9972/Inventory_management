@@ -23,7 +23,7 @@ const getDetailedReport = async (req, res) => {
 
     // Total Purchase Cost
     const totalPurchaseCost = purchaseDetails.reduce((total, purchase) => {
-      return total + (purchase.quantity * purchase.price);
+      return (purchase.quantity * purchase.price/10);
     }, 0);
 
     const totalPaymentReceived = salesDetails.reduce((total, sale) => {

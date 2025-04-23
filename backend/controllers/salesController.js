@@ -12,11 +12,12 @@ const addSale = async (req, res) => {
       paymentAmount,
       transactionId,
       paymentStatus,
+      customerContact,
       paidBy
     } = req.body;
 
     // Validate required fields
-    if (!chemical || !quantity || !soldBy || !paymentAmount || !paidBy) {
+    if (!chemical || !quantity || !soldBy || !paymentAmount || !paidBy||!customerContact) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -27,6 +28,7 @@ const addSale = async (req, res) => {
       saleDate,
       soldBy,
       paymentAmount,
+      customerContact,
       transactionId: transactionId || "",
       paymentStatus: paymentStatus || "Pending",  // Default to Pending
       paidBy

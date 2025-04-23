@@ -177,9 +177,10 @@ const Safety = () => {
   return (
     <div className="container-fluid">
       <Header />
+      
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="display-5">Chemical Safety Information</h1>
+          <h1 className="font-bold">Chemical Safety Information</h1>
           {!showForm && (
             <button 
               className="btn btn-primary" 
@@ -281,7 +282,7 @@ const Safety = () => {
         </div>
 
         {/* Safety Information List */}
-        <div className="card shadow">
+        <div className="card shadow border-1 p-3">
           <div className="card-header bg-light">
             <h2 className="h5 mb-0">Safety Information List</h2>
           </div>
@@ -293,7 +294,7 @@ const Safety = () => {
           ) : (
             <div className="table-responsive">
               <table className="table table-hover table-striped align-middle mb-0">
-                <thead className="table-light">
+                <thead className="table-light p-1">
                   <tr>
                     <th>Chemical</th>
                     <th>Hazard</th>
@@ -302,11 +303,11 @@ const Safety = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className='p-1'>
                   {safetyList.map((safety) => (
                     <tr key={safety._id}>
                       <td className="fw-bold">{getChemicalName(safety.chemical)}</td>
-                      <td>
+                      <td className=''>
                         <span className={`badge ${getHazardBadgeClass(safety.hazard)}`}>
                           {safety.hazard}
                         </span>

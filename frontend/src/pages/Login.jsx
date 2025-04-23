@@ -16,7 +16,7 @@ const Login = () => {
         username,
         password,
       });
-
+    console.log("From local the user : ",res.data)
       if (res.data && res.data.role=="admin") {
         localStorage.setItem('user', JSON.stringify(res.data)); // Store user info in localStorage
         navigate('/dashboard'); // Redirect to dashboard after login
@@ -30,40 +30,52 @@ const Login = () => {
     }
   };
 
+  const background = {
+    backgroundImage: `url('/login.png')`, // path from public folder
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    height: '90vh', // full screen
+  };
+  
+
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">Login</h2>
-        {error && <p className="error-message">{error}</p>}
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+    <div style={background}>
+    <div className="login-container"  style={background}>
+          <div className="login-card bg-gray-800 ">
+            <h2 className="login-title">Login</h2>
+            {error && <p className="error-message">{error}</p>}
+            <form onSubmit={handleSubmit} className="login-form">
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="login-button">Login</button>
+              </div>
+            </form>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-actions">
-            <button type="submit" className="login-button">Login</button>
-          </div>
-        </form>
-      </div>
+        </div>
     </div>
+    
   );
 };
 

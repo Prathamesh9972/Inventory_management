@@ -154,15 +154,14 @@ const StaffChemicalsMgmt = () => {
       <Container fluid className="py-4">
         <Row className="mb-4">
           <Col>
-            <h2 className="page-title">
-              <i className="bi bi-flask me-2"></i>
+            <h2 className=" font-bold page-title">
               Chemicals Management
             </h2>
           </Col>
         </Row>
 
         {/* Chemical Form Card */}
-        <Row className="mb-4">
+        <Row className="mb-5">
           <Col lg={12}>
             <Card className="shadow-sm">
               <Card.Header className="bg-white">

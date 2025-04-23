@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import { toast } from 'react-hot-toast';
 
 const Staff_cred = () => {
   const [name, setName] = useState('');
@@ -27,8 +29,14 @@ const Staff_cred = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert('Staff created successfully!');
-        navigate('/staff_cred'); // Redirect to staff list page
+        // alert('Staff created successfully!');
+        toast.success("Staff Created Sucessfully");
+         // 🧹 Clear form fields
+        setName('');
+        setUsername('');
+        setPassword('');
+        navigate('/staff_add'); // Redirect to staff list page
+       
       } else {
         setError(result.message || 'Error creating staff');
       }
@@ -37,9 +45,14 @@ const Staff_cred = () => {
     }
   };
 
+
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-semibold mb-4">Create Staff Credentials</h1>
+    <>
+    <Header/>
+    <br/>
+    <h1 className="px-4 text-2xl font-bold mb-4">Add New Staff Member</h1>
+    <div className="max-w-2xl mx-auto p-6  bg-white shadow-md rounded-lg">
+      
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -81,6 +94,8 @@ const Staff_cred = () => {
         </button>
       </form>
     </div>
+    </>
+    
   );
 };
 

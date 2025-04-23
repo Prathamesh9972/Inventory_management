@@ -230,6 +230,7 @@ const Purchases = () => {
                           <th className="px-3 py-3">Purchased By</th>
                           <th className="px-3 py-3">Status</th>
                           <th className="px-3 py-3">Date</th>
+                          <th className="px-3 py-3">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -248,6 +249,24 @@ const Purchases = () => {
                                 </Badge>
                               </td>
                               <td className="px-3 py-3">{new Date(p.purchaseDate).toLocaleDateString()}</td>
+                              <td>
+                                <div className="btn-group btn-group-sm">
+                                  <button 
+                                    className="btn btn-outline-primary" 
+                                    onClick={() => handleEdit(safety)}
+                                    title="Edit"
+                                  >
+                                    <i className="bi bi-pencil"></i>
+                                  </button>
+                                  <button 
+                                    className="btn btn-outline-danger" 
+                                    onClick={() => handleDelete(safety._id)}
+                                    title="Delete"
+                                  >
+                                    <i className="bi bi-trash"></i>
+                                  </button>
+                                </div>
+                              </td>
                             </tr>
                           ))
                         ) : (

@@ -53,6 +53,7 @@ const ChemicalsManagement = () => {
 
   const handleEditChemical = (chemical) => {
     setFormData({
+      id:chemical._id,
       name: chemical.name,
       batchNumber: chemical.batchNumber,
       quantity: chemical.quantity,
@@ -205,7 +206,7 @@ const ChemicalsManagement = () => {
 
       {/* Table */}
       <div className="bg-white shadow-lg rounded-lg overflow-x-auto">
-        <div className="flex justify-between p-4 border-b">
+        <div className="flex justify-between p-6 border-b">
           <h3 className="font-bold text-blue-600">Chemical Inventory</h3>
           <button onClick={fetchChemicals} className="text-sm text-blue-600 hover:underline focus:outline-none">
             Refresh
@@ -216,9 +217,10 @@ const ChemicalsManagement = () => {
         ) : chemicals.length === 0 ? (
           <div className="p-6 text-center text-gray-500">No chemicals found.</div>
         ) : (
-          <table className="table-auto w-full text-sm">
+          <table className="table-auto w-full text-sm p-4 m-2">
             <thead className="bg-gray-100">
               <tr className="text-left">
+                <th className="p-2">Chemical Id</th>
                 <th className="p-2">Name</th>
                 <th className="p-2">Batch</th>
                 <th className="p-2">Qty</th>
@@ -231,6 +233,7 @@ const ChemicalsManagement = () => {
             <tbody>
               {chemicals.map((chem) => (
                 <tr key={chem._id} className="border-t">
+                  <td className="p-2">{chem._id}</td>
                   <td className="p-2">{chem.name}</td>
                   <td className="p-2">{chem.batchNumber}</td>
                   <td className="p-2">{chem.quantity}</td>
