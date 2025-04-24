@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import StaffHeader from "../../components/StaffHeader";
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const StaffChemicalsMgmt = () => {
   const [chemicals, setChemicals] = useState([]);
@@ -30,7 +31,7 @@ const StaffChemicalsMgmt = () => {
   const fetchChemicals = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/chemicals");
+      const response = await axios.get(`${backend_url}/api/chemicals`);
       setChemicals(response.data);
     } catch (error) {
       console.error("Error fetching chemicals:", error.response?.data);
@@ -54,7 +55,7 @@ const StaffChemicalsMgmt = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/chemicals",
+        `${backend_url}/api/chemicals`,
         formData
       );
       setChemicals([...chemicals, response.data]);
@@ -86,7 +87,7 @@ const StaffChemicalsMgmt = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/chemicals/${editChemicalId}`,
+        `${backend_url}/api/chemicals/${editChemicalId}`,
         formData
       );
       const updatedChemicals = chemicals.map((chemical) =>
@@ -110,7 +111,7 @@ const StaffChemicalsMgmt = () => {
   // Handle deleting a chemical
   const handleDeleteChemical = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/chemicals/${deleteChemicalId}`);
+      await axios.delete(`${backend_url}/api/chemicals/${deleteChemicalId}`);
       setChemicals(chemicals.filter((chemical) => chemical._id !== deleteChemicalId));
       setShowDeleteModal(false);
       toast.success("Chemical deleted successfully");

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import './Signup.css'; // Import CSS file
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -14,7 +15,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/users/register', {
+      const res = await axios.post(`${backend_url}/api/users/register`, {
         name,
         username,
         password,

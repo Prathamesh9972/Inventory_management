@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const Safety = () => {
   const [safetyList, setSafetyList] = useState([]);
@@ -23,7 +24,7 @@ const Safety = () => {
 
   const fetchSafetyData = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/safety');
+      const res = await axios.get(`${backend_url}/api/safety`);
       setSafetyList(res.data);
     } catch (err) {
       console.error('Failed to fetch safety info:', err);
@@ -33,7 +34,7 @@ const Safety = () => {
 
   const fetchChemicals = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/chemicals');
+      const res = await axios.get(`${backend_url}/api/chemicals`);
       setChemicals(res.data);
     } catch (err) {
       console.error('Failed to fetch chemicals:', err);
@@ -86,7 +87,7 @@ const Safety = () => {
     
     try {
       if (editingId) {
-        const updatedSafety = await axios.put(`http://localhost:5000/api/safety/${editingId}`, formData);
+        const updatedSafety = await axios.put(`${backend_url}/api/safety/${editingId}`, formData);
         setSafetyList(
           safetyList.map((safety) =>
             safety._id === editingId ? updatedSafety.data : safety
@@ -94,7 +95,7 @@ const Safety = () => {
         );
         alert('Safety information updated successfully!');
       } else {
-        const newSafety = await axios.post('${process.env.BACKEND_URL}/api/safety', formData);
+        const newSafety = await axios.post(`${backend_url}/api/safety`, formData);
         setSafetyList([...safetyList, newSafety.data]);
         alert('Safety information added successfully!');
       }
@@ -130,7 +131,7 @@ const Safety = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this safety information?')) {
       try {
-        await axios.delete(`${process.env.BACKEND_URL}/api/safety/${id}`);
+        await axios.delete(`${backend_url}/api/safety/${id}`);
         setSafetyList(safetyList.filter((safety) => safety._id !== id));
         alert('Safety information deleted successfully.');
       } catch (err) {

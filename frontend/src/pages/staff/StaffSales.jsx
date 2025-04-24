@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import StaffHeader from '../../components/StaffHeader';
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const StaffSales = () => {
   const [sales, setSales] = useState([]);
@@ -26,7 +27,7 @@ const StaffSales = () => {
 
  const fetchSales = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/api/sales');
+    const response = await axios.get(`${backend_url}/api/sales`);
     setSales(response.data);
   } catch (error) {
     console.error('Error fetching sales:', error);
@@ -35,7 +36,7 @@ const StaffSales = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/sales');
+        const response = await axios.get(`${backend_url}/api/sales`);
         setSales(response.data);
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -44,7 +45,7 @@ const StaffSales = () => {
 
     const fetchChemicals = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/chemicals');
+        const response = await axios.get(`${backend_url}/api/chemicals`);
         setChemicalOptions(response.data);
       } catch (error) {
         console.error('Error fetching chemicals:', error);
@@ -62,7 +63,7 @@ const StaffSales = () => {
   const handleAddSale = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/sales', {
+      const response = await axios.post(`${backend_url}/api/sales`, {
         ...form,
         soldBy: userId,
       });
@@ -76,7 +77,7 @@ const StaffSales = () => {
   const handleUpdateSale = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:5000/api/sales/${editingSale._id}`, {
+      const response = await axios.put(`${backend_url}/api/sales/${editingSale._id}`, {
         ...form,
         soldBy: editingSale.soldBy,
       });
@@ -93,7 +94,7 @@ const StaffSales = () => {
   const handleDeleteSale = async (saleId) => {
     if (window.confirm('Are you sure you want to delete this sale?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/sales/${saleId}`);
+        await axios.delete(`${backend_url}/api/sales/${saleId}`);
         setSales(sales.filter((sale) => sale._id !== saleId));
       } catch (error) {
         console.error('Error deleting sale:', error);

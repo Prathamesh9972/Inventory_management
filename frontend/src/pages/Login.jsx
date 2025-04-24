@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css'; // Import CSS file
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${process.env.BACKEND_URL}/api/users/login`, {
+      const res = await axios.post(`${backend_url}/api/users/login`, {
         username,
         password,
       });

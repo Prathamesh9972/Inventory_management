@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { toast } from 'react-hot-toast';
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const Staff_cred = () => {
   const [name, setName] = useState('');
@@ -20,7 +21,7 @@ const Staff_cred = () => {
     const staffData = { name, username, password };
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/staff_add', {
+      const response = await fetch(`${backend_url}/api/users/staff_add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(staffData),

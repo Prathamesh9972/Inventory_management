@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Header from "../components/Header";
 import "react-toastify/dist/ReactToastify.css";
 import "./chemical.css"
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const ChemicalsManagement = () => {
   const [chemicals, setChemicals] = useState([]);
@@ -25,7 +26,7 @@ const ChemicalsManagement = () => {
   const fetchChemicals = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.BACKEND_URL}/api/chemicals`);
+      const response = await axios.get(`${backend_url}/api/chemicals`);
       setChemicals(response.data);
     } catch (error) {
       toast.error("Failed to load chemicals");
@@ -42,7 +43,7 @@ const ChemicalsManagement = () => {
   const handleAddChemical = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/chemicals", formData);
+      const response = await axios.post(`${backend_url}/api/chemicals`, formData);
       setChemicals([...chemicals, response.data]);
       resetForm();
       toast.success("Chemical added");
@@ -68,7 +69,7 @@ const ChemicalsManagement = () => {
   const handleUpdateChemical = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:5000/api/chemicals/${editChemicalId}`, formData);
+      const response = await axios.put(`${backend_url}/api/chemicals/${editChemicalId}`, formData);
       setChemicals(
         chemicals.map((chem) => (chem._id === editChemicalId ? response.data : chem))
       );
@@ -82,7 +83,7 @@ const ChemicalsManagement = () => {
   const handleDeleteChemical = async (id) => {
     if (!window.confirm("Delete this chemical permanently?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/chemicals/${id}`);
+      await axios.delete(`${backend_url}/api/chemicals/${id}`);
       setChemicals(chemicals.filter((chem) => chem._id !== id));
       toast.success("Deleted");
     } catch (error) {

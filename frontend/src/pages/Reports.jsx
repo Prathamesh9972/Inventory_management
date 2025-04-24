@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import { Download, Filter, RefreshCw, Printer, ChevronDown, Calendar } from 'lucide-react';
 import Header from '../components/Header';
+const backend_url='https://inventory-management-1apm.onrender.com';
 
 const Reports = () => {
   const [report, setReport] = useState(null);
@@ -26,7 +27,7 @@ const Reports = () => {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${process.env.BACKEND_URL}/api/reports/detailed`, {
+      const res = await axios.get(`${backend_url}/api/reports/detailed`, {
         params: {
           startDate: dateRange.start || undefined,
           endDate: dateRange.end || undefined
@@ -133,7 +134,7 @@ const Reports = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axios.get(`${process.env.BACKEND_URL}/api/sales`);
+        const response = await axios.get(`${backend_url}/api/sales`);
         setSales(response.data);
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -143,7 +144,7 @@ const Reports = () => {
     // Fetch chemicals for the dropdown
     const fetchChemicals = async () => {
       try {
-        const response = await axios.get(`${process.env.BACKEND_URL}/api/chemicals`);
+        const response = await axios.get(`${backend_url}/api/chemicals`);
         setChemicalOptions(response.data);
       } catch (error) {
         console.error('Error fetching chemicals:', error);

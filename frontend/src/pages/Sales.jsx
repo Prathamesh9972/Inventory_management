@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
+const backend_url='https://inventory-management-1apm.onrender.com';
+
 
 const Sales = () => {
   // State for CRUD operations
@@ -26,7 +28,7 @@ const Sales = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/sales');
+        const response = await axios.get(`${backend_url}/api/sales`);
         setSales(response.data);
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -36,7 +38,7 @@ const Sales = () => {
     // Fetch chemicals for the dropdown
     const fetchChemicals = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/chemicals');
+        const response = await axios.get(`${backend_url}/api/chemicals`);
         setChemicalOptions(response.data);
       } catch (error) {
         console.error('Error fetching chemicals:', error);
@@ -57,7 +59,7 @@ const Sales = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/sales', form);
+      const response = await axios.post(`${backend_url}/api/sales`, form);
       setSales([...sales, response.data]); // Add new sale to state
       setForm({
         chemical: '',
@@ -81,7 +83,7 @@ const Sales = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/sales/${editingSale._id}`, form);
+      const response = await axios.put(`${backend_url}/api/sales/${editingSale._id}`, form);
       const updatedSales = sales.map((sale) =>
         sale._id === editingSale._id ? response.data : sale
       );
@@ -108,7 +110,7 @@ const Sales = () => {
   const handleDeleteSale = async (saleId) => {
     if (window.confirm('Are you sure you want to delete this sale?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/sales/${saleId}`);
+        await axios.delete(`${backend_url}/api/sales/${saleId}`);
         setSales(sales.filter((sale) => sale._id !== saleId)); // Remove sale from state
       } catch (error) {
         console.error('Error deleting sale:', error);

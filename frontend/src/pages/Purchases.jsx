@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Table, Card, Badge, InputGroup } from 'react-bootstrap';
 import Header from '../components/Header';
+const backend_url='https://inventory-management-1apm.onrender.com';
+
 
 const Purchases = () => {
   const [purchases, setPurchases] = useState([]);
@@ -19,7 +21,7 @@ const Purchases = () => {
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${process.env.BACKEND_URL}/api/purchases`);
+      const res = await axios.get(`${backend_url}/api/purchases`);
       setPurchases(res.data);
     } catch (err) {
       console.error('Error fetching purchases:', err);
@@ -44,7 +46,7 @@ const Purchases = () => {
         quantity: parseInt(formData.quantity),
         price: parseFloat(formData.price),
       };
-      await axios.post(`${process.env.BACKEND_URL}/api/purchases`, newPurchase);
+      await axios.post(`${backend_url}/api/purchases`, newPurchase);
       setFormData({
         chemical: '',
         supplierName: '',
