@@ -19,7 +19,7 @@ const Purchases = () => {
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/purchases');
+      const res = await axios.get(`${process.env.BACKEND_URL}/api/purchases`);
       setPurchases(res.data);
     } catch (err) {
       console.error('Error fetching purchases:', err);
@@ -44,7 +44,7 @@ const Purchases = () => {
         quantity: parseInt(formData.quantity),
         price: parseFloat(formData.price),
       };
-      await axios.post('http://localhost:5000/api/purchases', newPurchase);
+      await axios.post(`${process.env.BACKEND_URL}/api/purchases`, newPurchase);
       setFormData({
         chemical: '',
         supplierName: '',

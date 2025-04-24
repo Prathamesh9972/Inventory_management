@@ -94,7 +94,7 @@ const Safety = () => {
         );
         alert('Safety information updated successfully!');
       } else {
-        const newSafety = await axios.post('http://localhost:5000/api/safety', formData);
+        const newSafety = await axios.post('${process.env.BACKEND_URL}/api/safety', formData);
         setSafetyList([...safetyList, newSafety.data]);
         alert('Safety information added successfully!');
       }
@@ -130,7 +130,7 @@ const Safety = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this safety information?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/safety/${id}`);
+        await axios.delete(`${process.env.BACKEND_URL}/api/safety/${id}`);
         setSafetyList(safetyList.filter((safety) => safety._id !== id));
         alert('Safety information deleted successfully.');
       } catch (err) {

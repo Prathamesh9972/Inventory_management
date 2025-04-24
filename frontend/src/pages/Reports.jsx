@@ -26,7 +26,7 @@ const Reports = () => {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/reports/detailed', {
+      const res = await axios.get(`${process.env.BACKEND_URL}/api/reports/detailed`, {
         params: {
           startDate: dateRange.start || undefined,
           endDate: dateRange.end || undefined
@@ -133,7 +133,7 @@ const Reports = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/sales');
+        const response = await axios.get(`${process.env.BACKEND_URL}/api/sales`);
         setSales(response.data);
       } catch (error) {
         console.error('Error fetching sales:', error);
@@ -143,7 +143,7 @@ const Reports = () => {
     // Fetch chemicals for the dropdown
     const fetchChemicals = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/chemicals');
+        const response = await axios.get(`${process.env.BACKEND_URL}/api/chemicals`);
         setChemicalOptions(response.data);
       } catch (error) {
         console.error('Error fetching chemicals:', error);

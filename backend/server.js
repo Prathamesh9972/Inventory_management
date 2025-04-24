@@ -8,8 +8,10 @@ const app = express()
 // Connect to database
 connectDB()
 
-// Middleware
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true // if you're sending cookies or auth headers
+}));
 app.use(express.json())
 
 // Routes
