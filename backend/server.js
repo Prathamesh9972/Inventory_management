@@ -9,9 +9,10 @@ const app = express()
 connectDB()
 
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true // if you're sending cookies or auth headers
+  origin: ['http://localhost:5173', 'https://invent-eight.vercel.app'],
+  credentials: true
 }));
+
 app.use(express.json())
 
 // Routes
